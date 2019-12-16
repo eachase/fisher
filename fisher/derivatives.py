@@ -15,11 +15,12 @@ def perturb_param(event, param, epsilon):
 
     # Create new event
     copied_event = copy(event)
-    setattr(event, param, param0 + epsilon)
+    setattr(copied_event, param, param0 + epsilon)
 
     # Compute waveform for new event
     copied_event.waveform(flow=event.flow, deltaf=event.deltaf, 
         fhigh=event.fhigh)
+
 
     return copied_event
 
