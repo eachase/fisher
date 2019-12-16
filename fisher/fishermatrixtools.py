@@ -45,6 +45,10 @@ class FisherMatrix(object):
                     deriv_i*np.conjugate(deriv_j) / self.psd * deltaf).numpy()))
         self.fishermatrix = FIM    
 
+        # Pre-compute basic Fisher Matrix statistics
+        self._covariance()
+        self._inverse()
+
 
     def __getitem__(self, param):
         """
@@ -56,6 +60,40 @@ class FisherMatrix(object):
 
 
 
+    def _covariance(self):
+        self.covariance_matrix = np.cov(self.fishermatrix)
+        return self.covariance_matrix
+
+
+    def _inverse(self):
+        if not np.all(self.covariance_matrix == 0):
+            self.inverse_matrix = np.linalg.inv(self.fishermatrix)
+        else:
+            # FIXME: make this a warning
+            print('Fisher Matrix not invertible')
+            self.inverse_matrix = None
+
+        return self.inverse_matrix
+
+
+    def stdev(self, param):
+
+        stdev = None
+
+        # Check that the matrix is invertible
+        if self.inverse_matrix is not None:
+            param_idx = np.where(self.params == param)[0][0]
+            stdev = np.sqrt(self.inverse_matrix[param_idx][param_idx])
+        else:
+            print('Fisher Matrix not invertible')
+
+
+        return stdev
+
+
+
+# FIXME: make a general matrix class and initiate the covariance, inverse, and FIM as Matrix objects
+# (Might be overkill given what numpy already has available)
 
 
 
