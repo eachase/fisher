@@ -14,6 +14,11 @@ class FisherMatrix(object):
     def __init__(self, event, params,
         ifo='H1', flow=10, deltaf=0.125, fhigh=2048):
 
+
+        self.params = np.asarray(params)
+        self.numparams = len(params)
+
+
         # Compute waveform, if not already done
         if not np.all(np.asarray([hasattr(event, attr) for attr \
             in event._waveattrs+('hx','hp')])):
@@ -31,7 +36,7 @@ class FisherMatrix(object):
             fisherparams[param] = FisherParameter(event, param)
 
         # Form Fisher Matrix
-        FIM = np.zeros((len(params), len(params)))
+        FIM = np.zeros((self.numparams, self.numparams))
         for i, param_i in enumerate(params):
             for j, param_j in enumerate(params):
                 deriv_i = fisherparams[param_i].derivative
@@ -39,6 +44,19 @@ class FisherMatrix(object):
                 FIM[i, j] = 4 * np.real(np.nansum((
                     deriv_i*np.conjugate(deriv_j) / self.psd * deltaf).numpy()))
         self.fishermatrix = FIM    
+
+
+    def __getitem__(self, param):
+        """
+        Return FIM for this parameter
+        """
+
+        param_idx = np.where(self.params == param)[0][0]
+        return self.fishermatrix[param_idx][param_idx]
+
+
+
+
 
 
 class FisherParameter(object):
