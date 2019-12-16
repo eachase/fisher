@@ -7,6 +7,7 @@ from fisher import derivatives
 epsilons = {
     'mass1': 1e-5,
     'mass2': 1e-5,
+    'distance': 1e-2,
     }
 
 class FisherMatrix(object):
