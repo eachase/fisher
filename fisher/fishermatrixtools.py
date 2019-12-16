@@ -1,6 +1,8 @@
 import numpy as np
 import pycbc.psd
 
+from fisher import derivatives
+
 # Epsilons for finite differencing
 epsilons = {
     'mass1': 1e-5,
@@ -24,6 +26,9 @@ class FisherMatrix(object):
         # FIXME: allow for different PSDs
 
         # Compute necessary derivatives
+        fisherparams = {}
+        for param in params:
+            fisherparams[param] = FisherParameter(event, param)
 
         # Form Fisher Matrix
 
@@ -31,9 +36,9 @@ class FisherMatrix(object):
 
 class FisherParameter(object):
 
-    def __init__(self, parameter):
+    def __init__(self, event, parameter):
         self.epsilon = epsilons[parameter]
-        self.derivative = 0
+        self.derivative = derivatives.derivative(event, parameter, self.epsilon)
 
 
 
