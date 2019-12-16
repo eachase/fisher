@@ -1,48 +1,27 @@
 from copy import copy
 import numpy as np
 
-def perturb_mass1(event, epsilon):
+def perturb_param(event, param, epsilon):
     """
-    Derivative w.r.t. primary component mass
+    Derivative w.r.t. some parameter
     """
+    
+    # Original value
+    param0 = getattr(event, param)
 
-    assert abs(epsilon) < abs(event.mass1)
-    assert event.mass1 - epsilon > 0 
+    assert abs(epsilon) < param0
+    # FIXME: add some parameter-specific assertions
+    #assert event.mass1 - epsilon > 0 
 
     # Create new event
     copied_event = copy(event)
-    copied_event.mass1 = event.mass1 + epsilon
+    setattr(event, param, param0 + epsilon)
 
     # Compute waveform for new event
     copied_event.waveform(flow=event.flow, deltaf=event.deltaf, 
         fhigh=event.fhigh)
 
     return copied_event
-
-def perturb_mass2(event, epsilon):
-    """
-    Derivative w.r.t. secondary component mass
-    """
-
-    assert abs(epsilon) < abs(event.mass1)
-    assert event.mass2 - epsilon > 0 
-
-    # Create new event
-    copied_event = copy(event)
-    copied_event.mass2 = event.mass2 + epsilon
-
-    # Compute waveform for new event
-    copied_event.waveform(flow=event.flow, deltaf=event.deltaf, 
-        fhigh=event.fhigh)
-
-    return copied_event
-
-
-# Functions for numerical derivative computation
-deriv_functions = {
-    'mass1': perturb_mass1,
-    'mass2': perturb_mass2,
-    }
 
 
 
@@ -70,14 +49,11 @@ def derivative(event, parameter, epsilon):
     assert np.all(np.asarray([hasattr(event, attr) for attr \
         in event._waveattrs+('hx','hp')]))
 
-    # Select function for differencing step
-    deriv_func = deriv_functions[parameter]
-
     # Compute waveform for event one step forward
-    event_forward = deriv_func(event, epsilon)
+    event_forward = perturb_param(event, parameter, epsilon)
 
     # Compute waveform for event one step backward
-    event_backward = deriv_func(event, -epsilon)
+    event_backward = perturb_param(event, parameter, -epsilon)
 
     # Report the derivative
     assert (event_backward.freqs == event_forward.freqs).all()
