@@ -13,6 +13,10 @@ def perturb_mass1(event, epsilon):
     copied_event = copy(event)
     copied_event.mass1 = event.mass1 + epsilon
 
+    # Compute waveform for new event
+    copied_event.waveform(flow=event.flow, deltaf=event.deltaf, 
+        fhigh=event.fhigh)
+
     return copied_event
 
 def perturb_mass2(event, epsilon):
@@ -26,6 +30,10 @@ def perturb_mass2(event, epsilon):
     # Create new event
     copied_event = copy(event)
     copied_event.mass2 = event.mass2 + epsilon
+
+    # Compute waveform for new event
+    copied_event.waveform(flow=event.flow, deltaf=event.deltaf, 
+        fhigh=event.fhigh)
 
     return copied_event
 

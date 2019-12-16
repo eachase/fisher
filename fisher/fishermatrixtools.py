@@ -31,7 +31,14 @@ class FisherMatrix(object):
             fisherparams[param] = FisherParameter(event, param)
 
         # Form Fisher Matrix
-
+        FIM = np.zeros((len(params), len(params)))
+        for i, param_i in enumerate(params):
+            for j, param_j in enumerate(params):
+                deriv_i = fisherparams[param_i].derivative
+                deriv_j = fisherparams[param_j].derivative
+                FIM[i, j] = 4 * np.real(np.nansum((
+                    deriv_i*np.conjugate(deriv_j) / self.psd * deltaf).numpy()))
+        self.fishermatrix = FIM    
 
 
 class FisherParameter(object):
