@@ -17,7 +17,7 @@ def perturb_mass1(event, epsilon):
 
 def perturb_mass2(event, epsilon):
     """
-    Derivative w.r.t. primary component mass
+    Derivative w.r.t. secondary component mass
     """
 
     assert abs(epsilon) < abs(event.mass1)
