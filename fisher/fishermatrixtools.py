@@ -81,12 +81,11 @@ class FisherMatrix(object):
 
         stdev = None
 
-        # Check that the matrix is invertible
-        if self.inverse_matrix is not None:
-            param_idx = np.where(self.params == param)[0][0]
+        param_idx = np.where(self.params == param)[0][0]
+        try:    
             stdev = np.sqrt(self.inverse_matrix[param_idx][param_idx])
-        else:
-            print('Fisher Matrix not invertible')
+        except:
+            raise ValueError('Fisher Matrix not invertible')
 
 
         return stdev
