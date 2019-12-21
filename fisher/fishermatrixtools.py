@@ -49,11 +49,14 @@ class FisherMatrix(object):
                 deriv_i = fisherparams[param_i].derivative
                 deriv_j = fisherparams[param_j].derivative
                 FIM[i, j] = 4 * np.real(np.nansum((
-                    deriv_i*np.conjugate(deriv_j) / self.psd * deltaf).numpy()))
+                    deriv_i*np.conjugate(deriv_j) / 
+                    np.asarray(self.psd) * deltaf))) # add .numpy() to end inside brackets?
         self.fishermatrix = FIM    
 
         # Pre-compute basic Fisher Matrix statistics
         self._covariance()
+
+
         self._inverse()
 
 
@@ -73,7 +76,8 @@ class FisherMatrix(object):
 
 
     def _inverse(self):
-        if not np.all(self.covariance_matrix == 0):
+
+        if np.linalg.det(self.fishermatrix) != 0:
             self.inverse_matrix = np.linalg.inv(self.fishermatrix)
         else:
             # FIXME: make this a warning
